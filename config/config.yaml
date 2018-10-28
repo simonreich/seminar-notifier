@@ -11,25 +11,33 @@ active: true
 # This lists holds days on which BEFORE the event mails should be sent.
 # E.g. [0, 3] will send one mail the day of the event and one mail three days before.
 # Integer values >=0 are allowed.
-# The mail template is located in the folder template/pre-n.txt.jinja where n is the list value. For the above example template/pre-0.txt.jinja and template/pre-3.txt.jinja must exist.
+# The mail template is located in the folder template/student-pre-n.txt.jinja where n is the list value. For the above example template/student-pre-0.txt.jinja and template/student-pre-3.txt.jinja must exist.
 # If left empty, no mails are sent prior the event.
-pre: [0, 1]
+student-pre: [0, 1]
 
 
 # This lists holds days on which AFTER the event mails should be sent.
 # E.g. [0, 3] will send one mail the day of the event and one mail three days after.
 # Integer values >=0 are allowed.
-# The mail template is located in the folder template/post-n.txt.jinja where n is the list value. For the above example template/post-0.txt.jinja and template/post-3.txt.jinja must exist.
+# The mail template is located in the folder template/student-post-n.txt.jinja where n is the list value. For the above example template/student-post-0.txt.jinja and template/student-post-3.txt.jinja must exist.
 # If left empty, no mails are sent after the event.
-post: [0, 1]
+student-post: []
 
 
 # This lists holds days on which BEFORE the event mails to the supervisor should be sent.
 # E.g. [0, 3] will send one mail the day of the event and one mail three days before.
 # Integer values >=0 are allowed.
-# The mail template is located in the folder template/supervisor-n.txt.jinja where n is the list value. For the above example template/supervisor-0.txt.jinja and template/supervisor-3.txt.jinja must exist.
+# The mail template is located in the folder template/supervisor-pre-n.txt.jinja where n is the list value. For the above example template/supervisor-pre-0.txt.jinja and template/supervisor-pre-3.txt.jinja must exist.
 # If left empty, no mails are sent prior the event.
-supervisor: [0, 1]
+supervisor-pre: []
+
+
+# This lists holds days on which AFTER the event mails to the supervisor should be sent.
+# E.g. [0, 3] will send one mail the day of the event and one mail three days after.
+# Integer values >=0 are allowed.
+# The mail template is located in the folder template/supervisor-post-n.txt.jinja where n is the list value. For the above example template/supervisor-post-0.txt.jinja and template/supervisor-post-3.txt.jinja must exist.
+# If left empty, no mails are sent prior the event.
+supervisor-post: []
 
 
 # Seminar name
@@ -41,8 +49,8 @@ mailsubject: "Greetings from your lovely seminar!"
 
 
 # Send a copy of each mail (excluding error reports) to this addresses.
-mailcopy: [a@example.com]
+mailcopy: [prof@example.com]
 
 
 # Reports of malconfiguration are sent to this addresses
-mailadmin: [a@example.com]
+mailadmin: [admin@example.com]

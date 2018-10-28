@@ -44,6 +44,14 @@ from datetime import datetime
 
 
 
+def composeMail (template, talkList):
+  mail = Template(template)
+  template.render(name='John Doe')
+    print(template, talkList)
+    return 0
+
+
+
 def main():
   # This holds every error and is sent to the admin
   error = []
@@ -59,23 +67,29 @@ def main():
   except:
     error.append("No \"active\" field in " + folderConfig + "/config.yaml")
     
-  configPre = []
+  configStudentPre = []
   try:
-    configPre = config["pre"]
+    configStudentPre = config["student-pre"]
   except:
-    error.append("No \"pre\" field in " + folderConfig + "/config.yaml")
+    error.append("No \"student-pre\" field in " + folderConfig + "/config.yaml")
 
-  configPost = []
+  configStudentPost = []
   try:
-    configPost = config["post"]
+    configStudentPost = config["student-post"]
   except:
-    error.append("No \"post\" field in " + folderConfig + "/config.yaml")
+    error.append("No \"student-post\" field in " + folderConfig + "/config.yaml")
 
-  configSupervisor = []
+  configSupervisorPre = []
   try:
-    configSupervisor = config["supervisor"]
+    configSupervisorPre = config["supervisor-pre"]
   except:
-    error.append("No \"supervisor\" field in " + folderConfig + "/config.yaml")
+    error.append("No \"supervisor-pre\" field in " + folderConfig + "/config.yaml")
+
+  configSupervisorPost = []
+  try:
+    configSupervisor = config["supervisor-post"]
+  except:
+    error.append("No \"supervisor-post\" field in " + folderConfig + "/config.yaml")
 
   configSeminarname = ""
   try:
@@ -103,37 +117,46 @@ def main():
 
 
   # Read templates
-  templatePre = []
-  for preN in configPre:
+  templateStudentPre = []
+  for preN in configStudentPre:
     if isinstance(preN, (int)) and int(preN) >=0:
       try:
-        f = open(folderTemplate + "/pre-" + str(preN) + ".txt.jinja", "r")
-        templatePre.append(f)
+        f = open(folderTemplate + "/student-pre-" + str(preN) + ".txt.jinja", "r")
+        templateStudentPre.append(f.read())
       except:
-        error.append("Could not open template " + folderTemplate + "/pre-" + str(preN) + ".txt.jinja")
+        error.append("Could not open template " + folderTemplate + "/student-pre-" + str(preN) + ".txt.jinja")
 
-  templatePost = []
-  for postN in configPost:
+  templateStudentPost = []
+  for postN in configStudentPost:
     if isinstance(postN, (int)) and int(postN) >=0:
       try:
-        f = open(folderTemplate + "/post-" + str(postN) + ".txt.jinja", "r")
-        templatePost.append(f)
+        f = open(folderTemplate + "/student-post-" + str(postN) + ".txt.jinja", "r")
+        templateStudentPost.append(f.read())
       except:
-        error.append("Could not open template " + folderTemplate + "/post-" + str(postN) + ".txt.jinja")
+        error.append("Could not open template " + folderTemplate + "/student-post-" + str(postN) + ".txt.jinja")
 
-  templateSupervisor = []
-  for supervisorN in configSupervisor:
+  templateSupervisorPre = []
+  for supervisorN in configSupervisorPre:
     if isinstance(supervisorN, (int)) and int(supervisorN) >=0:
       try:
-        f = open(folderTemplate + "/supervisor-" + str(supervisorN) + ".txt.jinja", "r")
-        templateSupervisor.append(f)
+        f = open(folderTemplate + "/supervisor-pre-" + str(supervisorN) + ".txt.jinja", "r")
+        templateSupervisorPre.append(f.read())
       except:
-        error.append("Could not open template " + folderTemplate + "/supervisor-" + str(supervisorN) + ".txt.jinja")
+        error.append("Could not open template " + folderTemplate + "/supervisor-pre-" + str(supervisorN) + ".txt.jinja")
+
+  templateSupervisorPost = []
+  for supervisorN in configSupervisorPost:
+    if isinstance(supervisorN, (int)) and int(supervisorN) >=0:
+      try:
+        f = open(folderTemplate + "/supervisor-post-" + str(supervisorN) + ".txt.jinja", "r")
+        templateSupervisorPost.append(f.read())
+      except:
+        error.append("Could not open template " + folderTemplate + "/supervisor-post-" + str(supervisorN) + ".txt.jinja")
 
   templateAdmin = []
   try:
     f = open(folderTemplate + "/admin.txt.jinja", "r")
-    templateAdmin.append(f)
+    templateAdmin.append(f.read())
   except:
     error.append("Could not open template " + folderTemplate + "/admin.txt.jinja")
 
@@ -152,17 +175,101 @@ def main():
     error.append("Could not read talk list " + folderConfig + "/talks.csv")
 
 
-  # Compose mails to students
+  # Append how many days are left until talk to talk list
   dateToday = datetime.today()
   for talk in talks:
-    dateTalk = datetime.strptime(talk[0], '%d.%m.%Y')
-    diff = (dateTalk-dateToday).days
-    print (diff)
-  #for preN in configPre:
-  #  if isinstance(preN, (int)) and int(preN) >=0:
+    try:
+      dateTalk = datetime.strptime(talk[0], '%d.%m.%Y')
+    except:
+      error.append("Date for talk " + str(row[1]) + " " + str(row[2]) + " is " + str(row[0]) + " and should be in the format 20.01.2000 (%d.%m.%Y).")
+
+    # dateDiff < 0 means days prior talk, > 0 means days after talk
+    dateDiff = (dateToday-dateTalk).days
+    talk.append(dateDiff)
+
+
+  # Check, if dateDiff is in student-pre
+  talkList = [[0 for x in range(0)] for x in range(0)]
+  c = 0
+  for days in configStudentPre:
+    for talk in talks:
+      if talk[-1] == days:
+        talkList.append(talk)
+
+    # Compose mail
+    mail = composeMail(templateStudentPre[c], talkList)
+    c += 1
+
+    # Send mail
+
+
+  # Check, if dateDiff is in student-post
+  talkList = [[0 for x in range(0)] for x in range(0)]
+  c = 0
+  for days in configStudentPost:
+    for talk in talks:
+      if talk[-1] == days:
+        talkList.append(talk)
+
+    # Compose mail
+    mail = composeMail(templateStudentPost[c], talkList)
+    c += 1
+
+    # Send mail
+
+
+  # Check, if dateDiff is in supervisor-pre
+  talkList = [[0 for x in range(0)] for x in range(0)]
+  c = 0
+  for days in configSupervisorPre:
+    for talk in talks:
+      if talk[-1] == days:
+        talkList.append(talk)
+
+    # Compose mail
+    mail = composeMail(templateSupervisorPre[c], talkList)
+    c += 1
+
+    # Send mail
+
+
+  # Check, if dateDiff is in supervisor-post
+  talkList = [[0 for x in range(0)] for x in range(0)]
+  c = 0
+  for days in configSupervisorPost:
+    for talk in talks:
+      if talk[-1] == days:
+        talkList.append(talk)
+
+    # Compose mail
+    mail = composeMail(templateSupervisorPost[c], talkList)
+    c += 1
+
+    # Send mail
+
+    
+
+#
+#    # Check, if dateDiff is in student-post
+#    if dateDiff in configStudentPost:
+#      talkStudentPost.append(talk)
+#
+#    # Check, if dateDiff is in supervisor-pre
+#    if (dateDiff * -1) in configSupervisorPre:
+#      talkSupervisorPre.append(talk)
+
+#    # Check, if dateDiff is in supervisor-post
+#    if dateDiff in configSupervisorPost:
+#      talkSupervisorPost.append(talk)
+#
+#    for StudentPreN in configStudentPre:
+#      if isinstance(preN, (int)) and int(preN) >=0:
+
+
+    # Mail composet
 
   print(talks)
-  print(error)
+  #print(error)
 
 
 
