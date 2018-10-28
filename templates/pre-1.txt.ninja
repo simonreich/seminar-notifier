@@ -1,0 +1,23 @@
+Dear {{ mail_firstname|escape }}, 
+
+{% if len(talk_list) == 0 %}
+  there will be no Journal Club tomorrow. Enjoy your free time!
+{% else %}
+  tomorrow will be the next session of our Journal Club. 
+  
+  {%- for talk in talk_list %}
+    {{ talk.firstname|escape }} {{ talk.lastname|escape }} will give a talk with the title: 
+    {{ talk.title|escape }}
+    Abstract: {{ talk.abstract|escape }}
+  
+  {%- endfor %}
+{% endif %}
+
+Best
+
+Moritz
+
+
+PS: Have a look at the schedule to find out when it is your next turn to give a talk!
+
+{{ schedule|escape }}
