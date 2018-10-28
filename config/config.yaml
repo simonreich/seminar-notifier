@@ -2,7 +2,7 @@
 # It is parsed first and only afterwards talks.yaml is read.
 
 
-# If this is set to false, the script exists immediately and no mails are sent.
+# If this is set to false, no mails are sent, except error reports to the admin.
 #active: true
 #active: false
 active: true
@@ -11,16 +11,38 @@ active: true
 # This lists holds days on which BEFORE the event mails should be sent.
 # E.g. [0, 3] will send one mail the day of the event and one mail three days before.
 # Integer values >=0 are allowed.
-# The mail template is located in the folder template/pre-n.txt where n is the list value. For the above example template/pre-0.txt and template/pre-3.txt must exist.
+# The mail template is located in the folder template/pre-n.txt.jinja where n is the list value. For the above example template/pre-0.txt.jinja and template/pre-3.txt.jinja must exist.
+# If left empty, no mails are sent prior the event.
 pre: [0, 1]
 
 
 # This lists holds days on which AFTER the event mails should be sent.
 # E.g. [0, 3] will send one mail the day of the event and one mail three days after.
 # Integer values >=0 are allowed.
-# The mail template is located in the folder template/post-n.txt where n is the list value. For the above example template/post-0.txt and template/post-3.txt must exist.
+# The mail template is located in the folder template/post-n.txt.jinja where n is the list value. For the above example template/post-0.txt.jinja and template/post-3.txt.jinja must exist.
+# If left empty, no mails are sent after the event.
 post: [0, 1]
 
 
-# Send a copy of each mail to this addressess.
-mailcopy: []
+# This lists holds days on which BEFORE the event mails to the supervisor should be sent.
+# E.g. [0, 3] will send one mail the day of the event and one mail three days before.
+# Integer values >=0 are allowed.
+# The mail template is located in the folder template/supervisor-n.txt.jinja where n is the list value. For the above example template/supervisor-0.txt.jinja and template/supervisor-3.txt.jinja must exist.
+# If left empty, no mails are sent prior the event.
+supervisor: [0, 1]
+
+
+# Seminar name
+seminarname: "Journal Club"
+
+
+# Subject of all mails
+mailsubject: "Greetings from your lovely seminar!"
+
+
+# Send a copy of each mail (excluding error reports) to this addresses.
+mailcopy: [a@example.com]
+
+
+# Reports of malconfiguration are sent to this addresses
+mailadmin: [a@example.com]
