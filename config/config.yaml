@@ -1,0 +1,26 @@
+# This file holds general configurations.
+# It is parsed first and only afterwards talks.yaml is read.
+
+
+# If this is set to false, the script exists immediately and no mails are sent.
+#active: true
+#active: false
+active: true
+
+
+# This lists holds days on which BEFORE the event mails should be sent.
+# E.g. [0, 3] will send one mail the day of the event and one mail three days before.
+# Integer values >=0 are allowed.
+# The mail template is located in the folder template/pre-n.txt where n is the list value. For the above example template/pre-0.txt and template/pre-3.txt must exist.
+pre: [0, 1]
+
+
+# This lists holds days on which AFTER the event mails should be sent.
+# E.g. [0, 3] will send one mail the day of the event and one mail three days after.
+# Integer values >=0 are allowed.
+# The mail template is located in the folder template/post-n.txt where n is the list value. For the above example template/post-0.txt and template/post-3.txt must exist.
+post: [0, 1]
+
+
+# Send a copy of each mail to this addressess.
+mailcopy: []
