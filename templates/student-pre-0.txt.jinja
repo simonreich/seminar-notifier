@@ -1,23 +1,21 @@
-Dear {{ mail_firstname|escape }}, 
+Dear {{ mail_firstname|escape }} {{ mail_lastname|escape }},
 
+{% if talk_list|length == 0 %}
+there will be no Journal Club today. Enjoy your free time!
+{%- else %}
+today will be the next session of our Journal Club. 
+{%- for talk in talk_list %}
 
-{% if len(talk_list) == 0 %}
-  there will be no Journal Club today. Enjoy your free time!
-{% else %}
-  today will be the next session of our Journal Club. 
+{{ talk[1]|escape }} {{ talk[2]|escape }} will give a talk with the title: 
+*{{ talk[4]|escape }}*
+Abstract: {{ talk[5]|escape }}
   
-  {%- for talk in talk_list %}
-    {{ talk.firstname|escape }} {{ talk.lastname|escape }} will give a talk with the title: 
-    *{{ talk.title|escape }}*
-    Abstract: {{ talk.abstract|escape }}
-  
-  {%- endfor %}
+{%- endfor %}
 {% endif %}
-
 
 Best
 
-Moritz
+Your {{ seminar_name|escape }} Notifier
 
 
 PS: Have a look at the schedule to find out when it is your next turn to give a talk!

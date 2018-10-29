@@ -21,10 +21,10 @@ This file is part of seminar-notifier.
 
 
 # Folder for config files
-folderConfig = "/home/simon/git/seminar-notifier/config"
+folderConfig = "/home/sreich/git/seminar-notifier/config"
 
 # Folder for templates
-folderTemplate = "/home/simon/git/seminar-notifier/templates"
+folderTemplate = "/home/sreich/git/seminar-notifier/templates"
 
 # Sendmail binary
 sendmail = "/usr/bin/sendmail"
@@ -41,14 +41,41 @@ from yaml import load
 from jinja2 import Template
 import csv
 from datetime import datetime
+from email.mime.text import MIMEText
+from subprocess import Popen, PIPE
 
 
 
-def composeMail (template, talkList):
-  mail = Template(template)
-  template.render(name='John Doe')
-    print(template, talkList)
-    return 0
+def computeSchedule (talks):
+  schedule = ""
+  for talk in talks:
+    if talk[-1] <= 0:
+      schedule += str(talk[0]) + " " + str(talk[1]) + " " + str(talk[2]) + "\n"
+  return schedule
+
+
+
+def composeMail (template, talkReminder, talks, seminarname):
+  mails = [[0 for x in range(0)] for x in range(0)]
+  schedule = computeSchedule (talks)
+  for talk in talks:
+    mailtext = Template(template)
+    mailtext = mailtext.render(talk_list=talkReminder, mail_firstname=talk[1], mail_lastname=talk[2], seminar_name=seminarname, schedule=schedule)
+    mail = [talk[3], mailtext]
+    mails.append(mail)
+  return mails
+
+
+
+def sendMail (mails, mailcopy, subject):
+  msg = MIMEText("Here is the body of my message")
+  msg["From"] = "me@example.com"
+  msg["To"] = "you@example.com"
+  msg["Subject"] = "This is the subject."
+  p = Popen(["/usr/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
+  p.communicate(msg.as_string())
+
+  return
 
 
 
@@ -197,10 +224,11 @@ def main():
         talkList.append(talk)
 
     # Compose mail
-    mail = composeMail(templateStudentPre[c], talkList)
-    c += 1
-
+    mails = composeMail(templateStudentPre[c], talkList, talks, configSeminarname)
     # Send mail
+    if configActive:
+      sendMail(mails, configMailcopy)
+    c += 1
 
 
   # Check, if dateDiff is in student-post
@@ -212,10 +240,11 @@ def main():
         talkList.append(talk)
 
     # Compose mail
-    mail = composeMail(templateStudentPost[c], talkList)
-    c += 1
-
+    mails = composeMail(templateStudentPre[c], talkList, talks, configSeminarname)
     # Send mail
+    if configActive:
+      sendMail(mails, configMailcopy)
+    c += 1
 
 
   # Check, if dateDiff is in supervisor-pre
@@ -227,10 +256,11 @@ def main():
         talkList.append(talk)
 
     # Compose mail
-    mail = composeMail(templateSupervisorPre[c], talkList)
-    c += 1
-
+    mails = composeMail(templateStudentPre[c], talkList, talks, configSeminarname)
     # Send mail
+    if configActive:
+      sendMail(mails, configMailcopy)
+    c += 1
 
 
   # Check, if dateDiff is in supervisor-post
@@ -242,10 +272,12 @@ def main():
         talkList.append(talk)
 
     # Compose mail
-    mail = composeMail(templateSupervisorPost[c], talkList)
+    mails = composeMail(templateStudentPre[c], talkList, talks, configSeminarname)
+    # Send mail
+    if configActive:
+      sendMail(mails, configMailcopy)
     c += 1
 
-    # Send mail
 
     
 
