@@ -50,31 +50,83 @@ def computeSchedule (talks):
     schedule = ""
     for talk in talks:
         if talk[-1] <= 0:
-            schedule += str(talk[0]) + " " + str(talk[1]) + " " + str(talk[2]) + "\n"
+            if (talk[1] != "") or (talk[2] != "") or (talk [3] != ""):
+                schedule += str(talk[0]) + " " + str(talk[1]) + " " + str(talk[2]) + "\n"
     return schedule
 
 
 
-def composeMail (template, talkReminder, talks, seminarname):
+def composeMailStudent (template, talkList, talks, seminarname):
+    # If there is a date, but no first name, second name, and mail address, than this talk does not take place
+    talkListClean = [[0 for x in range(0)] for x in range(0)]
+    for talk in talkList:
+        if (talk[1] != "") or (talk[2] != "") or (talk [3] != ""):
+            talkListClean.append(talk)
+
     mails = [[0 for x in range(0)] for x in range(0)]
     schedule = computeSchedule (talks)
     for talk in talks:
         mailtext = Template(template)
-        mailtext = mailtext.render(talk_list=talkReminder, mail_firstname=talk[1], mail_lastname=talk[2], seminar_name=seminarname, schedule=schedule)
-        mail = [talk[3], mailtext]
+        mailtext = mailtext.render(talk_list=talkListClean, mail_firstname=talk[1], mail_lastname=talk[2], seminar_name=seminarname, schedule=schedule)
+        if (talk[3] != ""):
+            mail = [talk[3], mailtext]
         mails.append(mail)
     return mails
 
 
 
-def sendMail (mails, mailcopy, subject):
-    msg = MIMEText("Here is the body of my message")
-    msg["From"] = "me@example.com"
-    msg["To"] = "you@example.com"
-    msg["Subject"] = "This is the subject."
-    p = Popen(["/usr/sbin/sendmail", "-t", "-oi"], stdin=PIPE)
-    p.communicate(msg.as_string())
+def composeMailSupervisor (template, talk, seminarname):
+    mailtext = Template(template)
+    mailtext = mailtext.render(supervisor_name=talk[6], talk=talk, seminar_name=seminarname)
+    return [[talk[7], mailtext]]
 
+
+
+def composeMailAdmin (template, errors, seminarname):
+    mailtext = Template(template)
+    mailtext = mailtext.render(problem_list=errors, seminar_name=seminarname)
+    return mailtext
+
+
+
+def sendMail (mails, mailcopy, subject, binSendmail):
+    for mail in mails:
+        bcc = ""
+        c = len(mailcopy)
+        for recipient in mailcopy:
+            bcc += str(recipient)
+            if c > 1:
+                cc +=", "
+            c -= 1
+        msg = MIMEText(mail[1])
+        msg["From"] = ""
+        msg["To"] = mail[0]
+        msg["BCC"] = bcc
+        msg["Subject"] = subject
+        #p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
+        #p.communicate(msg.as_string())
+        print(msg.as_string())
+    return
+
+
+
+def sendMailAdmin (mailtext, mailAdmin, subject, binSendmail):
+    for recipient in mailAdmin:
+        bcc = ""
+        c = len(mailAdmin)
+        for recipient in mailAdmin:
+            bcc += str(recipient)
+            if c > 1:
+                cc +=", "
+            c -= 1
+        msg = MIMEText(mailtext)
+        msg["From"] = ""
+        msg["To"] = ""
+        msg["BCC"] = bcc
+        msg["Subject"] = subject
+        #p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
+        #p.communicate(msg.as_string())
+        print(msg.as_string())
     return
 
 
@@ -83,6 +135,8 @@ def main():
     # This holds every error and is sent to the admin
     error = []
 
+    # Sendmail binary
+    configSendmail = "/usr/bin/sendmail"
 
     # read config.yaml
     with open(folderConfig + "/config.yaml", 'r') as stream:
@@ -114,7 +168,7 @@ def main():
 
     configSupervisorPost = []
     try:
-        configSupervisor = config["supervisor-post"]
+        configSupervisorPost = config["supervisor-post"]
     except:
         error.append("No \"supervisor-post\" field in " + folderConfig + "/config.yaml")
 
@@ -180,10 +234,10 @@ def main():
             except:
                 error.append("Could not open template " + folderTemplate + "/supervisor-post-" + str(supervisorN) + ".txt.jinja")
 
-    templateAdmin = []
+    templateAdmin = ""
     try:
         f = open(folderTemplate + "/admin.txt.jinja", "r")
-        templateAdmin.append(f.read())
+        templateAdmin = f.read()
     except:
         error.append("Could not open template " + folderTemplate + "/admin.txt.jinja")
 
@@ -215,67 +269,80 @@ def main():
         talk.append(dateDiff)
 
 
+    # Check for errors
+    # If present, send mail to admin and exit
+    if len(error) > 0:
+        mailtext = composeMailAdmin (templateAdmin, error, configSeminarname)
+        sendMailAdmin (mailtext, configMailadmin, configMailsubject, configSendmail)
+        exit(1)
+
+
     # Check, if dateDiff is in student-pre
-    talkList = [[0 for x in range(0)] for x in range(0)]
     c = 0
     for days in configStudentPre:
+        talkList = [[0 for x in range(0)] for x in range(0)]
         for talk in talks:
-            if talk[-1] == days:
+            if talk[-1] == days*(-1):
                 talkList.append(talk)
 
         # Compose mail
-        mails = composeMail(templateStudentPre[c], talkList, talks, configSeminarname)
+        mails = composeMailStudent(templateStudentPre[c], talkList, talks, configSeminarname)
         # Send mail
         if configActive:
-            sendMail(mails, configMailcopy)
+            sendMail(mails, configMailcopy, configMailsubject, configSendmail)
         c += 1
 
 
     # Check, if dateDiff is in student-post
-    talkList = [[0 for x in range(0)] for x in range(0)]
     c = 0
     for days in configStudentPost:
+        talkList = [[0 for x in range(0)] for x in range(0)]
         for talk in talks:
             if talk[-1] == days:
                 talkList.append(talk)
 
         # Compose mail
-        mails = composeMail(templateStudentPre[c], talkList, talks, configSeminarname)
+        mails = composeMailStudent(templateStudentPre[c], talkList, talks, configSeminarname)
         # Send mail
         if configActive:
-            sendMail(mails, configMailcopy)
+            sendMail(mails, configMailcopy, configMailsubject, configSendmail)
         c += 1
 
 
     # Check, if dateDiff is in supervisor-pre
-    talkList = [[0 for x in range(0)] for x in range(0)]
     c = 0
     for days in configSupervisorPre:
+        talkList = [[0 for x in range(0)] for x in range(0)]
         for talk in talks:
-            if talk[-1] == days:
+            if talk[-1] == days*(-1):
                 talkList.append(talk)
 
         # Compose mail
-        mails = composeMail(templateStudentPre[c], talkList, talks, configSeminarname)
-        # Send mail
-        if configActive:
-            sendMail(mails, configMailcopy)
+        for talk in talkList:
+            mail = composeMailSupervisor(templateSupervisorPre[c], talk, configSeminarname)
+            # Send mail
+            if configActive:
+                sendMail(mail, configMailcopy, configMailsubject, configSendmail)
         c += 1
 
 
     # Check, if dateDiff is in supervisor-post
-    talkList = [[0 for x in range(0)] for x in range(0)]
     c = 0
+    print(";;;;;")
     for days in configSupervisorPost:
+        print(days)
+        talkList = [[0 for x in range(0)] for x in range(0)]
         for talk in talks:
             if talk[-1] == days:
                 talkList.append(talk)
 
         # Compose mail
-        mails = composeMail(templateStudentPre[c], talkList, talks, configSeminarname)
-        # Send mail
-        if configActive:
-            sendMail(mails, configMailcopy)
+        for talk in talkList:
+            print(talk)
+            mail = composeMailSupervisor(templateSupervisorPost[c], talk, configSeminarname)
+            # Send mail
+            if configActive:
+                sendMail(mail, configMailcopy, configMailsubject, configSendmail)
         c += 1
 
 
@@ -300,7 +367,6 @@ def main():
 
         # Mail composet
 
-    print(talks)
     #print(error)
 
 

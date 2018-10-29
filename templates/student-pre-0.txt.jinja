@@ -1,9 +1,9 @@
 Dear {{ mail_firstname|escape }} {{ mail_lastname|escape }},
 
 {% if talk_list|length == 0 %}
-there will be no Journal Club today. Enjoy your free time!
+there will be no {{ seminar_name|escape }} today. Enjoy your free time!
 {%- else %}
-today will be the next session of our Journal Club. 
+today will be the next session of our {{ seminar_name|escape }}. 
 {%- for talk in talk_list %}
 
 {{ talk[1]|escape }} {{ talk[2]|escape }} will give a talk with the title: 
