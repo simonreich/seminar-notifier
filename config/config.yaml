@@ -11,14 +11,14 @@ active: true
 # Date must be in the format dd.mm.YYYY, e.g. 14.01.2001.
 # The mail template is located in the folder template/student-event-dd.mm.YYYY.txt.jinja, where dd.mm.YYYY must correlate with the date.
 # E.g. student-event-14.01.2001.txt.jinja to send a mail at January 14th, 2001 to all students.
-student-event: []
+student-event: [01.11.2018, 03.11.2018]
 
 
 # Send mails to all supervisors at this specific date.
 # Date must be in the format dd.mm.YYYY, e.g. 14.01.2001.
 # The mail template is located in the folder template/supervisor-event-dd.mm.YYYY.txt.jinja, where dd.mm.YYYY must correlate with the date.
 # E.g. supervisor-event-14.01.2001.txt.jinja to send a mail at January 14th, 2001 to all supervisors.
-supervisor-event: []
+supervisor-event: [02.11.2018]
 
 
 # This lists holds days on which BEFORE the talk mails should be sent.

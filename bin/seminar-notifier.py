@@ -67,7 +67,7 @@ def composeMailStudent (template, talkList, talks, seminarname):
     schedule = computeSchedule (talks)
     for talk in talks:
         mailtext = Template(template)
-        mailtext = mailtext.render(talk_list=talkListClean, mail_firstname=talk[1], mail_lastname=talk[2], seminar_name=seminarname, schedule=schedule)
+        mailtext = mailtext.render(talk_list=talkListClean, student_firstname=talk[1], student_lastname=talk[2], seminar_name=seminarname, schedule=schedule, talk=talk, supervisor_name=talk[6])
         if (talk[3] != ""):
             mail = [talk[3], mailtext]
         mails.append(mail)
@@ -75,9 +75,10 @@ def composeMailStudent (template, talkList, talks, seminarname):
 
 
 
-def composeMailSupervisor (template, talk, seminarname):
+def composeMailSupervisor (template, talk, talks, seminarname):
+    schedule = computeSchedule (talks)
     mailtext = Template(template)
-    mailtext = mailtext.render(supervisor_name=talk[6], talk=talk, seminar_name=seminarname)
+    mailtext = mailtext.render(student_firstname=talk[1], student_lastname=talk[2], seminar_name=seminarname, schedule=schedule, talk=talk, supervisor_name=talk[6])
     return [[talk[7], mailtext]]
 
 
@@ -148,6 +149,18 @@ def main():
     except:
         error.append("No \"active\" field in " + folderConfig + "/config.yaml")
         
+    configStudentEvent = []
+    try:
+        configStudentEvent = config["student-event"]
+    except:
+        error.append("No \"student-event\" field in " + folderConfig + "/config.yaml")
+        
+    configSupervisorEvent = []
+    try:
+        configSupervisorEvent = config["supervisor-event"]
+    except:
+        error.append("No \"supervisor-event\" field in " + folderConfig + "/config.yaml")
+        
     configStudentPre = []
     try:
         configStudentPre = config["student-pre"]
@@ -198,6 +211,30 @@ def main():
 
 
     # Read templates
+    templateStudentEvent = []
+    for eventN in configStudentEvent:
+        try:
+            datetime.strptime(eventN, '%d.%m.%Y')
+            try:
+                f = open(folderTemplate + "/student-event-" + str(eventN) + ".txt.jinja", "r")
+                templateStudentEvent.append(f.read())
+            except:
+                error.append("Could not open template " + folderTemplate + "/student-event-" + str(eventN) + ".txt.jinja")
+        except:
+            error.append("Date in  \"student-event\" field in " + folderConfig + "/config.yaml has wrong format. Must be %d.%m.%Y, e.g. 14.01.2001.")
+
+    templateSupervisorEvent = []
+    for eventN in configSupervisorEvent:
+        try:
+            datetime.strptime(eventN, '%d.%m.%Y')
+            try:
+                f = open(folderTemplate + "/supervisor-event-" + str(eventN) + ".txt.jinja", "r")
+                templateSupervisorEvent.append(f.read())
+            except:
+                error.append("Could not open template " + folderTemplate + "/supervisor-event-" + str(eventN) + ".txt.jinja")
+        except:
+            error.append("Date in  \"supervisor-event\" field in " + folderConfig + "/config.yaml has wrong format. Must be %d.%m.%Y, e.g. 14.01.2001.")
+
     templateStudentPre = []
     for preN in configStudentPre:
         if isinstance(preN, (int)) and int(preN) >=0:
@@ -277,6 +314,36 @@ def main():
         exit(1)
 
 
+    # Check for student events
+    dateToday = datetime.today()
+    c = 0
+    for event in configStudentEvent:
+        dateEvent = datetime.strptime(event, '%d.%m.%Y')
+        if (dateToday - dateEvent).days == 0:
+            # Compose mail
+            mails = composeMailStudent(templateStudentEvent[c], talks, talks, configSeminarname)
+            # Send mail
+            if configActive:
+                sendMail(mails, configMailcopy, configMailsubject, configSendmail)
+        c += 1
+
+
+    # Check for supervisor events
+    dateToday = datetime.today()
+    c = 0
+    for event in configSupervisorEvent:
+        dateEvent = datetime.strptime(event, '%d.%m.%Y')
+        if (dateToday - dateEvent).days == 0:
+            # Compose mail
+            for talk in talks:
+                mails = composeMailSupervisor(templateSupervisorEvent[c], talk, talks, configSeminarname)
+
+                # Send mail
+                if configActive:
+                    sendMail(mails, configMailcopy, configMailsubject, configSendmail)
+        c += 1
+
+
     # Check, if dateDiff is in student-pre
     c = 0
     for days in configStudentPre:
@@ -286,10 +353,11 @@ def main():
                 talkList.append(talk)
 
         # Compose mail
-        mails = composeMailStudent(templateStudentPre[c], talkList, talks, configSeminarname)
-        # Send mail
-        if configActive:
-            sendMail(mails, configMailcopy, configMailsubject, configSendmail)
+        if (len(talkList) > 0):
+            mails = composeMailStudent(templateStudentPre[c], talkList, talks, configSeminarname)
+            # Send mail
+            if configActive:
+                sendMail(mails, configMailcopy, configMailsubject, configSendmail)
         c += 1
 
 
@@ -302,10 +370,11 @@ def main():
                 talkList.append(talk)
 
         # Compose mail
-        mails = composeMailStudent(templateStudentPre[c], talkList, talks, configSeminarname)
-        # Send mail
-        if configActive:
-            sendMail(mails, configMailcopy, configMailsubject, configSendmail)
+        if (len(talkList) > 0):
+            mails = composeMailStudent(templateStudentPre[c], talkList, talks, configSeminarname)
+            # Send mail
+            if configActive:
+                sendMail(mails, configMailcopy, configMailsubject, configSendmail)
         c += 1
 
 
@@ -318,31 +387,30 @@ def main():
                 talkList.append(talk)
 
         # Compose mail
-        for talk in talkList:
-            mail = composeMailSupervisor(templateSupervisorPre[c], talk, configSeminarname)
-            # Send mail
-            if configActive:
-                sendMail(mail, configMailcopy, configMailsubject, configSendmail)
+        if (len(talkList) > 0):
+            for talk in talkList:
+                mail = composeMailSupervisor(templateSupervisorPre[c], talk, talks, configSeminarname)
+                # Send mail
+                if configActive:
+                    sendMail(mail, configMailcopy, configMailsubject, configSendmail)
         c += 1
 
 
     # Check, if dateDiff is in supervisor-post
     c = 0
-    print(";;;;;")
     for days in configSupervisorPost:
-        print(days)
         talkList = [[0 for x in range(0)] for x in range(0)]
         for talk in talks:
             if talk[-1] == days:
                 talkList.append(talk)
 
         # Compose mail
-        for talk in talkList:
-            print(talk)
-            mail = composeMailSupervisor(templateSupervisorPost[c], talk, configSeminarname)
-            # Send mail
-            if configActive:
-                sendMail(mail, configMailcopy, configMailsubject, configSendmail)
+        if (len(talkList) > 0):
+            for talk in talkList:
+                mail = composeMailSupervisor(templateSupervisorPost[c], talk, talks, configSeminarname)
+                # Send mail
+                if configActive:
+                    sendMail(mail, configMailcopy, configMailsubject, configSendmail)
         c += 1
 
 
