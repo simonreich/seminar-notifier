@@ -107,16 +107,9 @@ class SeminarNotifier:
 
     def sendMailAdmin (self, mailtext, mailAdmin, subject, binSendmail):
         for recipient in mailAdmin:
-            to = ""
-            c = len(mailAdmin)
-            for recipient in mailAdmin:
-                to += str(recipient)
-                if c > 1:
-                    to +=", "
-                c -= 1
             msg = MIMEText(mailtext)
             msg["From"] = ""
-            msg["To"] = to
+            msg["To"] = recipient
             msg["BCC"] = ""
             msg["Subject"] = subject
             p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
