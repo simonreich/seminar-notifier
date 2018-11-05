@@ -2,10 +2,13 @@ Dear {{ student_firstname|escape }} {{ student_lastname|escape }},
 
 
 in yesterdays session of our {{ seminar_name|escape }} we talked about:
+{%- for talk in talk_list %}
 
-{{ talk[1]|escape }} {{ talk[2]|escape }}: 
+{{ talk[1]|escape }} {{ talk[2]|escape }} gave a talk with the title: 
 *{{ talk[4]|escape }}*
 Abstract: {{ talk[5]|escape }}
+  
+{%- endfor %}
 
 
 Best
