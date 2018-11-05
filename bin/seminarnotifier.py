@@ -37,8 +37,6 @@ class SeminarNotifier:
         self.folderTemplate = folderTemplate
         self.binSendmail = binSendmail
 
-        print (self.folderConfig, self.folderTemplate, self.binSendmail)
-
         self.mainloop()
 
 
