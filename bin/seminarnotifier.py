@@ -92,7 +92,7 @@ class SeminarNotifier:
             for recipient in mailcopy:
                 bcc += str(recipient)
                 if c > 1:
-                    cc +=", "
+                    bcc +=", "
                 c -= 1
             msg = MIMEText(mail[1])
             msg["From"] = ""
@@ -108,17 +108,17 @@ class SeminarNotifier:
 
     def sendMailAdmin (self, mailtext, mailAdmin, subject, binSendmail):
         for recipient in mailAdmin:
-            bcc = ""
+            to = ""
             c = len(mailAdmin)
             for recipient in mailAdmin:
-                bcc += str(recipient)
+                to += str(recipient)
                 if c > 1:
-                    cc +=", "
+                    to +=", "
                 c -= 1
             msg = MIMEText(mailtext)
             msg["From"] = ""
-            msg["To"] = ""
-            msg["BCC"] = bcc
+            msg["To"] = to
+            msg["BCC"] = ""
             msg["Subject"] = subject
             #p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
             #p.communicate(msg.as_string())
