@@ -1,0 +1,10 @@
+# This file holds general configurations.
+
+
+# This is a list of paths to all seminars, which should be handled by this python script
+# Configurations for each seminar can be found within this folder.
+seminars: ["/home/sreich/git/seminar-notifier/seminar-notifier/seminar1"]
+
+
+# Sendmail binary
+sendmail: "/usr/bin/sendmail"
