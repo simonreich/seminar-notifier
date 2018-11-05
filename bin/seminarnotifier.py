@@ -99,9 +99,8 @@ class SeminarNotifier:
             msg["To"] = mail[0]
             msg["BCC"] = bcc
             msg["Subject"] = subject
-            #p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
-            #p.communicate(msg.as_string())
-            print(msg.as_string())
+            p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
+            p.communicate(msg.as_bytes())
         return
 
 
@@ -120,9 +119,8 @@ class SeminarNotifier:
             msg["To"] = to
             msg["BCC"] = ""
             msg["Subject"] = subject
-            #p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
-            #p.communicate(msg.as_string())
-            print(msg.as_string())
+            p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
+            p.communicate(msg.as_bytes())
         return
 
 
