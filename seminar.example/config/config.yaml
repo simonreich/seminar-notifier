@@ -4,21 +4,23 @@
 # If this is set to false, no mails are sent, except error reports to the admin.
 #active: true
 #active: false
-active: true
+active: false
 
 
 # Send mails to all students at this specific date.
 # Date must be in the format dd.mm.YYYY, e.g. 14.01.2001.
 # The mail template is located in the folder template/student-event-dd.mm.YYYY.txt.jinja, where dd.mm.YYYY must correlate with the date.
 # E.g. student-event-14.01.2001.txt.jinja to send a mail at January 14th, 2001 to all students.
-student-event: [01.11.2018, 03.11.2018]
+# Templates must exist, if listed here.
+student-event: [03.11.2018]
 
 
 # Send mails to all supervisors at this specific date.
 # Date must be in the format dd.mm.YYYY, e.g. 14.01.2001.
 # The mail template is located in the folder template/supervisor-event-dd.mm.YYYY.txt.jinja, where dd.mm.YYYY must correlate with the date.
 # E.g. supervisor-event-14.01.2001.txt.jinja to send a mail at January 14th, 2001 to all supervisors.
-supervisor-event: [02.11.2018]
+# Templates must exist, if listed here.
+supervisor-event: [05.11.2018]
 
 
 # This lists holds days on which BEFORE the talk mails should be sent.
@@ -26,6 +28,7 @@ supervisor-event: [02.11.2018]
 # Integer values >=0 are allowed.
 # The mail template is located in the folder template/student-pre-n.txt.jinja where n is the list value. For the above example template/student-pre-0.txt.jinja and template/student-pre-3.txt.jinja must exist.
 # If left empty, no mails are sent prior the talk.
+# Templates must exist, if listed here.
 student-pre: [0, 1]
 
 
@@ -34,7 +37,8 @@ student-pre: [0, 1]
 # Integer values >=0 are allowed.
 # The mail template is located in the folder template/student-post-n.txt.jinja where n is the list value. For the above example template/student-post-0.txt.jinja and template/student-post-3.txt.jinja must exist.
 # If left empty, no mails are sent after the talk.
-student-post: []
+# Templates must exist, if listed here.
+student-post: [1]
 
 
 # This lists holds days on which BEFORE the talk mails to the supervisor should be sent.
@@ -42,7 +46,8 @@ student-post: []
 # Integer values >=0 are allowed.
 # The mail template is located in the folder template/supervisor-pre-n.txt.jinja where n is the list value. For the above example template/supervisor-pre-0.txt.jinja and template/supervisor-pre-3.txt.jinja must exist.
 # If left empty, no mails are sent prior the talk.
-supervisor-pre: [1]
+# Templates must exist, if listed here.
+supervisor-pre: [0, 1]
 
 
 # This lists holds days on which AFTER the talk mails to the supervisor should be sent.
@@ -50,6 +55,7 @@ supervisor-pre: [1]
 # Integer values >=0 are allowed.
 # The mail template is located in the folder template/supervisor-post-n.txt.jinja where n is the list value. For the above example template/supervisor-post-0.txt.jinja and template/supervisor-post-3.txt.jinja must exist.
 # If left empty, no mails are sent prior the talk.
+# Templates must exist, if listed here.
 supervisor-post: [1]
 
 
@@ -58,7 +64,7 @@ seminarname: "Journal Club"
 
 
 # Subject of all mails
-mailsubject: "Greetings from your lovely seminar!"
+mailsubject: "Research Seminar"
 
 
 # Send a copy of each mail (excluding error reports) to this addresses.
