@@ -7,4 +7,4 @@ seminars: ["/home/sreich/git/seminar-notifier/seminar-notifier/seminar.example"]
 
 
 # Sendmail binary
-sendmail: "/usr/bin/sendmail"
+sendmail: "/usr/sbin/sendmail"
