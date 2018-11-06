@@ -266,7 +266,7 @@ class SeminarNotifier:
         talks = [[0 for x in range(0)] for x in range(0)]
         try:
             with open(self.folderConfig + "/talks.csv") as f:
-                csv_reader = csv.reader(f, delimiter=',')
+                csv_reader = csv.reader(f, delimiter=';')
                 c = 0
                 for row in csv_reader:
                     if c > 0:
