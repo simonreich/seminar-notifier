@@ -1,5 +1,5 @@
-Date;Firstname;Lastname;Mail;Title;Abstract;Supervisor;Supervisormail
-06.11.2018;NameA;AA;a@example.com;Title A;Yes! Abstract;Supervisor A;sa@example.com
-13.11.2018;NameB;BB;b@example.com;Title B;Yes! Abstract;Supervisor B;sb@example.com
-20.11.2018;NameC;CC;c@example.com;Title C;Yes! Abstract;Supervisor C;sc@example.com
-27.11.2018;NameD;DD;d@example.com;Title D;Yes! Abstract;Supservisor D;sd@example.com
+Date,Firstname,Lastname,Mail,Title,Abstract,Supervisor,Supervisormail,,,
+06.11.2018,NameA,AA,a@example.com,Title,A,Yes!,Abstract,Supervisor,A,sa@example.com
+13.11.2018,NameB,BB,b@example.com,Title,B,Yes!,Abstract,Supervisor,B,sb@example.com
+20.11.2018,NameC,CC,c@example.com,Title,C,Yes!,Abstract,Supervisor,C,sc@example.com
+27.11.2018,NameD,DD,d@example.com,Title,D,Yes!,Abstract,Supservisor,D,sd@example.com
