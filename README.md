@@ -140,8 +140,8 @@ Entry D does not have a talk attached. D will not appear in the schedule, howeve
 
 All mails are personalized. This means they are addressed to one specific person. The following jinja2 short codes can be used in all templates, except the admin template:
 
-|Short code	|	Replacement	|
-| ---	|	---	|
+|Short code	                       |	Replacement	|
+| ---	                             |	---	|
 | `{{ student_firstname|escape }}` | is replaced with the recipient's first name. |
 | `{{ student_lastname|escape }}`  | is replaced with the recipient's last name. |
 | `{{ supervisor_name|escape }}`   | is replaced with the recipient's supervisor name. |
@@ -152,7 +152,7 @@ All mails are personalized. This means they are addressed to one specific person
 
 The following jinja2 short codes can be used in the admin template:
 
-|Short code	|	Replacement	|
-| ---	|	---	|
-| `{{ seminar_name|escape }}` | will be replaced with the seminar name. |
+|Short code	                    |	Replacement	|
+| ---	                          |	---	|
+| `{{ seminar_name|escape }}`   | will be replaced with the seminar name. |
 | `{{ problem_list[]|escape }}` | lists all errors as python list. |
