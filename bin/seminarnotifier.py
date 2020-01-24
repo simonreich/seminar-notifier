@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
+'''
 This file is part of seminar-notifier.
 seminar-notifier is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -12,7 +12,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
 GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with seminar-notifier.    If not, see <http://www.gnu.org/licenses/>.
-"""
+'''
 
 # (c) Simon Reich 2018
 
@@ -33,29 +33,56 @@ from subprocess import Popen, PIPE
 
 class SeminarNotifier:
     def __init__(self, folderConfig, folderTemplate, binSendmail):
+        ''' Initialization function.
+
+            Args:
+                folderConfig (str): Path to configuration file for this seminar.
+                folderTemplate (str): Path to template file for this seminar.
+                binSendmail (str): Path to sendmail binary.
+        '''
         self.folderConfig = folderConfig
         self.folderTemplate = folderTemplate
         self.binSendmail = binSendmail
 
+        # Start checking and sending mails.
         self.mainloop()
 
 
 
     def computeSchedule (self, talks):
-        schedule = ""
+        ''' This function computes a schedule of upcoming talks from the list in talks.
+
+            Args:
+                talks (List[List]): Array holding talks.
+
+            Returns:
+                str. List of upcoming talks.
+        '''
+        schedule = ''
         for talk in talks:
             if talk[-1] <= 0:
-                if (talk[1] != "") or (talk[2] != "") or (talk [3] != ""):
-                    schedule += str(talk[0]) + " " + str(talk[1]) + " " + str(talk[2]) + "\n"
+                if (talk[1] != '') or (talk[2] != '') or (talk [3] != ''):
+                    schedule += str(talk[0]) + ' ' + str(talk[1]) + ' ' + str(talk[2]) + '\n'
         return schedule
 
 
 
     def composeMailStudent (self, template, talkList, talks, seminarname):
+        ''' This function composes a mail using the student template.
+        
+            Args:
+                template (str): Jinja template for this mail.
+                talkList (List(List)): List of talks, which should be namend in the mail.
+                talks (List(List)): Full list of all talks (with all mail recipients)
+                seminarname (str): Name of seminar
+
+            Returns:
+                List([str, str]). Returns an array of [mail address, mail text] to send.
+        '''
         # If there is a date, but no first name, second name, and mail address, than this talk does not take place
         talkListClean = [[0 for x in range(0)] for x in range(0)]
         for talk in talkList:
-            if (talk[1] != "") or (talk[2] != "") or (talk [3] != ""):
+            if (talk[1] != '') or (talk[2] != '') or (talk [3] != ''):
                 talkListClean.append(talk)
      
         mails = [[0 for x in range(0)] for x in range(0)]
@@ -63,7 +90,7 @@ class SeminarNotifier:
         for talk in talks:
             mailtext = Template(template)
             mailtext = mailtext.render(talk_list=talkListClean, student_firstname=talk[1], student_lastname=talk[2], seminar_name=seminarname, schedule=schedule, talk=talk, supervisor_name=talk[6])
-            if (talk[3] != ""):
+            if (talk[3] != ''):
                 mail = [talk[3], mailtext]
                 mails.append(mail)
         return mails
@@ -71,6 +98,17 @@ class SeminarNotifier:
 
 
     def composeMailSupervisor (self, template, talk, talks, seminarname):
+        ''' This function composes a mail using the supervisor template.
+        
+            Args:
+                template (str): Jinja template for this mail.
+                talkList (List(List)): List of talks, which should be namend in the mail.
+                talks (List(List)): Full list of all talks (with all mail recipients)
+                seminarname (str): Name of seminar
+
+            Returns:
+                List([str, str]). Returns an array of [mail address, mail text] to send.
+        '''
         schedule = self.computeSchedule (talks)
         mailtext = Template(template)
         mailtext = mailtext.render(student_firstname=talk[1], student_lastname=talk[2], seminar_name=seminarname, schedule=schedule, talk=talk, supervisor_name=talk[6])
@@ -79,6 +117,16 @@ class SeminarNotifier:
 
 
     def composeMailAdmin (self, template, errors, seminarname):
+        ''' This function composes a mail using the admin template.
+        
+            Args:
+                template (str): Jinja template for this mail.
+                errors (List[str]): List of errors.
+                seminarname (str): Name of seminar
+
+            Returns:
+                str. Returns mail text to send.
+        '''
         mailtext = Template(template)
         mailtext = mailtext.render(problem_list=errors, seminar_name=seminarname)
         return mailtext
@@ -86,111 +134,131 @@ class SeminarNotifier:
 
 
     def sendMail (self, mails, mailcopy, subject, binSendmail):
+        ''' This function sends emails via sendmail.
+        
+            Args:
+                mails ([[str, str]]): List of [mail address, mail text].
+                mailcopy (str): A copy of every mail will be send to this address.
+                subject (str): Subject of mail.
+                binSendmail (str): Path to sendmail binary.
+        '''
         for mail in mails:
-            bcc = ""
+            bcc = ''
             c = len(mailcopy)
             for recipient in mailcopy:
                 bcc += str(recipient)
                 if c > 1:
-                    bcc +=", "
+                    bcc +=', '
                 c -= 1
             msg = MIMEText(mail[1])
-            msg["From"] = ""
-            msg["To"] = mail[0]
-            msg["BCC"] = bcc
-            msg["Subject"] = subject
-            p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
+            msg['From'] = ''
+            msg['To'] = mail[0]
+            msg['BCC'] = bcc
+            msg['Subject'] = subject
+            p = Popen([binSendmail, '-t', '-oi'], stdin=PIPE)
             p.communicate(msg.as_bytes())
         return
 
 
 
     def sendMailAdmin (self, mailtext, mailAdmin, subject, binSendmail):
+        ''' This function sends emails via sendmail to the admin.
+        
+            Args:
+                mailtext (str): Text to send.
+                mailAdmin (str): Email address of admin.
+                subject (str): Subject of mail.
+                binSendmail (str): Path to sendmail binary.
+        '''
         for recipient in mailAdmin:
             msg = MIMEText(mailtext)
-            msg["From"] = ""
-            msg["To"] = recipient
-            msg["BCC"] = ""
-            msg["Subject"] = subject
-            p = Popen([binSendmail, "-t", "-oi"], stdin=PIPE)
+            msg['From'] = ''
+            msg['To'] = recipient
+            msg['BCC'] = ''
+            msg['Subject'] = subject
+            p = Popen([binSendmail, '-t', '-oi'], stdin=PIPE)
             p.communicate(msg.as_bytes())
         return
 
 
 
     def mainloop(self):
+        ''' This function is the main loop. 
+
+            If something goes wrong, an exception is raised. Additionally, the program tries to send an error report to the admin.
+        '''
         # This holds every error and is sent to the admin
         error = []
  
         # read config.yaml
-        with open(self.folderConfig + "/config.yaml", 'r') as stream:
+        with open(self.folderConfig + '/config.yaml', 'r') as stream:
             config = load(stream)
  
         configActive = False
         try:
-            configActive = config["active"]
+            configActive = config['active']
         except:
-            error.append("No \"active\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'active\' field in ' + self.folderConfig + '/config.yaml')
             
         configStudentEvent = []
         try:
-            configStudentEvent = config["student-event"]
+            configStudentEvent = config['student-event']
         except:
-            error.append("No \"student-event\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'student-event\' field in ' + self.folderConfig + '/config.yaml')
             
         configSupervisorEvent = []
         try:
-            configSupervisorEvent = config["supervisor-event"]
+            configSupervisorEvent = config['supervisor-event']
         except:
-            error.append("No \"supervisor-event\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'supervisor-event\' field in ' + self.folderConfig + '/config.yaml')
             
         configStudentPre = []
         try:
-            configStudentPre = config["student-pre"]
+            configStudentPre = config['student-pre']
         except:
-            error.append("No \"student-pre\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'student-pre\' field in ' + self.folderConfig + '/config.yaml')
  
         configStudentPost = []
         try:
-            configStudentPost = config["student-post"]
+            configStudentPost = config['student-post']
         except:
-            error.append("No \"student-post\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'student-post\' field in ' + self.folderConfig + '/config.yaml')
  
         configSupervisorPre = []
         try:
-            configSupervisorPre = config["supervisor-pre"]
+            configSupervisorPre = config['supervisor-pre']
         except:
-            error.append("No \"supervisor-pre\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'supervisor-pre\' field in ' + self.folderConfig + '/config.yaml')
  
         configSupervisorPost = []
         try:
-            configSupervisorPost = config["supervisor-post"]
+            configSupervisorPost = config['supervisor-post']
         except:
-            error.append("No \"supervisor-post\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'supervisor-post\' field in ' + self.folderConfig + '/config.yaml')
  
-        configSeminarname = ""
+        configSeminarname = ''
         try:
-            configSeminarname = config["seminarname"]
+            configSeminarname = config['seminarname']
         except:
-            error.append("No \"seminarname\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'seminarname\' field in ' + self.folderConfig + '/config.yaml')
  
-        configMailsubject = ""
+        configMailsubject = ''
         try:
-            configMailsubject = config["mailsubject"]
+            configMailsubject = config['mailsubject']
         except:
-            error.append("No \"mailsubject\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'mailsubject\' field in ' + self.folderConfig + '/config.yaml')
  
         configMailcopy = []
         try:
-            configMailcopy = config["mailcopy"]
+            configMailcopy = config['mailcopy']
         except:
-            error.append("No \"mailcopy\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'mailcopy\' field in ' + self.folderConfig + '/config.yaml')
  
         configMailadmin = []
         try:
-            configMailadmin = config["mailadmin"]
+            configMailadmin = config['mailadmin']
         except:
-            error.append("No \"mailadmin\" field in " + self.folderConfig + "/config.yaml")
+            error.append('No \'mailadmin\' field in ' + self.folderConfig + '/config.yaml')
  
  
         # Read templates
@@ -199,73 +267,73 @@ class SeminarNotifier:
             try:
                 datetime.strptime(eventN, '%d.%m.%Y')
                 try:
-                    f = open(self.folderTemplate + "/student-event-" + str(eventN) + ".txt.jinja", "r")
+                    f = open(self.folderTemplate + '/student-event-' + str(eventN) + '.txt.jinja', 'r')
                     templateStudentEvent.append(f.read())
                 except:
-                    error.append("Could not open template " + self.folderTemplate + "/student-event-" + str(eventN) + ".txt.jinja")
+                    error.append('Could not open template ' + self.folderTemplate + '/student-event-' + str(eventN) + '.txt.jinja')
             except:
-                error.append("Date in  \"student-event\" field in " + self.folderConfig + "/config.yaml has wrong format. Must be %d.%m.%Y, e.g. 14.01.2001.")
+                error.append('Date in  \'student-event\' field in ' + self.folderConfig + '/config.yaml has wrong format. Must be %d.%m.%Y, e.g. 14.01.2001.')
  
         templateSupervisorEvent = []
         for eventN in configSupervisorEvent:
             try:
                 datetime.strptime(eventN, '%d.%m.%Y')
                 try:
-                    f = open(self.folderTemplate + "/supervisor-event-" + str(eventN) + ".txt.jinja", "r")
+                    f = open(self.folderTemplate + '/supervisor-event-' + str(eventN) + '.txt.jinja', 'r')
                     templateSupervisorEvent.append(f.read())
                 except:
-                    error.append("Could not open template " + self.folderTemplate + "/supervisor-event-" + str(eventN) + ".txt.jinja")
+                    error.append('Could not open template ' + self.folderTemplate + '/supervisor-event-' + str(eventN) + '.txt.jinja')
             except:
-                error.append("Date in  \"supervisor-event\" field in " + self.folderConfig + "/config.yaml has wrong format. Must be %d.%m.%Y, e.g. 14.01.2001.")
+                error.append('Date in  \'supervisor-event\' field in ' + self.folderConfig + '/config.yaml has wrong format. Must be %d.%m.%Y, e.g. 14.01.2001.')
  
         templateStudentPre = []
         for preN in configStudentPre:
             if isinstance(preN, (int)) and int(preN) >=0:
                 try:
-                    f = open(self.folderTemplate + "/student-pre-" + str(preN) + ".txt.jinja", "r")
+                    f = open(self.folderTemplate + '/student-pre-' + str(preN) + '.txt.jinja', 'r')
                     templateStudentPre.append(f.read())
                 except:
-                    error.append("Could not open template " + self.folderTemplate + "/student-pre-" + str(preN) + ".txt.jinja")
+                    error.append('Could not open template ' + self.folderTemplate + '/student-pre-' + str(preN) + '.txt.jinja')
  
         templateStudentPost = []
         for postN in configStudentPost:
             if isinstance(postN, (int)) and int(postN) >=0:
                 try:
-                    f = open(self.folderTemplate + "/student-post-" + str(postN) + ".txt.jinja", "r")
+                    f = open(self.folderTemplate + '/student-post-' + str(postN) + '.txt.jinja', 'r')
                     templateStudentPost.append(f.read())
                 except:
-                    error.append("Could not open template " + self.folderTemplate + "/student-post-" + str(postN) + ".txt.jinja")
+                    error.append('Could not open template ' + self.folderTemplate + '/student-post-' + str(postN) + '.txt.jinja')
  
         templateSupervisorPre = []
         for supervisorN in configSupervisorPre:
             if isinstance(supervisorN, (int)) and int(supervisorN) >=0:
                 try:
-                    f = open(self.folderTemplate + "/supervisor-pre-" + str(supervisorN) + ".txt.jinja", "r")
+                    f = open(self.folderTemplate + '/supervisor-pre-' + str(supervisorN) + '.txt.jinja', 'r')
                     templateSupervisorPre.append(f.read())
                 except:
-                    error.append("Could not open template " + self.folderTemplate + "/supervisor-pre-" + str(supervisorN) + ".txt.jinja")
+                    error.append('Could not open template ' + self.folderTemplate + '/supervisor-pre-' + str(supervisorN) + '.txt.jinja')
  
         templateSupervisorPost = []
         for supervisorN in configSupervisorPost:
             if isinstance(supervisorN, (int)) and int(supervisorN) >=0:
                 try:
-                    f = open(self.folderTemplate + "/supervisor-post-" + str(supervisorN) + ".txt.jinja", "r")
+                    f = open(self.folderTemplate + '/supervisor-post-' + str(supervisorN) + '.txt.jinja', 'r')
                     templateSupervisorPost.append(f.read())
                 except:
-                    error.append("Could not open template " + self.folderTemplate + "/supervisor-post-" + str(supervisorN) + ".txt.jinja")
+                    error.append('Could not open template ' + self.folderTemplate + '/supervisor-post-' + str(supervisorN) + '.txt.jinja')
  
-        templateAdmin = ""
+        templateAdmin = ''
         try:
-            f = open(self.folderTemplate + "/admin.txt.jinja", "r")
+            f = open(self.folderTemplate + '/admin.txt.jinja', 'r')
             templateAdmin = f.read()
         except:
-            error.append("Could not open template " + self.folderTemplate + "/admin.txt.jinja")
+            error.append('Could not open template ' + self.folderTemplate + '/admin.txt.jinja')
  
  
         # Read talk list
         talks = [[0 for x in range(0)] for x in range(0)]
         try:
-            with open(self.folderConfig + "/talks.csv") as f:
+            with open(self.folderConfig + '/talks.csv') as f:
                 csv_reader = csv.reader(f, delimiter=';')
                 c = 0
                 for row in csv_reader:
@@ -273,7 +341,7 @@ class SeminarNotifier:
                         talks.append(row)
                     c += 1
         except:
-            error.append("Could not read talk list " + self.folderConfig + "/talks.csv")
+            error.append('Could not read talk list ' + self.folderConfig + '/talks.csv')
  
  
         # Append how many days are left until talk to talk list
@@ -282,7 +350,7 @@ class SeminarNotifier:
             try:
                 dateTalk = datetime.strptime(talk[0], '%d.%m.%Y')
             except:
-                error.append("Date for talk " + str(row[1]) + " " + str(row[2]) + " is " + str(row[0]) + " and should be in the format 20.01.2000 (%d.%m.%Y).")
+                error.append('Date for talk ' + str(row[1]) + ' ' + str(row[2]) + ' is ' + str(row[0]) + ' and should be in the format 20.01.2000 (%d.%m.%Y).')
  
             # dateDiff < 0 means days prior talk, > 0 means days after talk
             dateDiff = (dateToday-dateTalk).days
@@ -294,7 +362,7 @@ class SeminarNotifier:
         if len(error) > 0:
             mailtext = self.composeMailAdmin (templateAdmin, error, configSeminarname)
             self.sendMailAdmin (mailtext, configMailadmin, configMailsubject, self.binSendmail)
-            exit(1)
+            raise ValueError('There was at least one error:\n ' + mailtext)
  
  
         # Check for student events
