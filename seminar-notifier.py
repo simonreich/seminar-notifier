@@ -22,7 +22,7 @@ along with seminar-notifier.    If not, see <http://www.gnu.org/licenses/>.
 
 
 
-from yaml import load
+import yaml
 from bin import seminarnotifier
 
 
@@ -34,7 +34,7 @@ def main():
     '''
     # read globalconfig.yaml
     with open('./globalconfig.yaml', 'r') as stream:
-        config = load(stream)
+        config = yaml.safe_load(stream)
  
     if not 'sendmail' in config:
         raise ValueError('Could not find sendmail in config file.')

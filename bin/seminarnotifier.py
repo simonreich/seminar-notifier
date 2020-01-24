@@ -22,7 +22,7 @@ along with seminar-notifier.    If not, see <http://www.gnu.org/licenses/>.
 
 
 
-from yaml import load
+import yaml
 from jinja2 import Template
 import csv
 from datetime import datetime
@@ -192,7 +192,7 @@ class SeminarNotifier:
  
         # read config.yaml
         with open(self.folderConfig + '/config.yaml', 'r') as stream:
-            config = load(stream)
+            config = yaml.safe_load(stream)
  
         configActive = False
         try:
