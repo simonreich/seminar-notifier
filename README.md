@@ -70,7 +70,7 @@ Example: "Dear Firstname Lastname, tomorrow will be the next session of our Jour
 student-post: [1]
 ```
 
-All students will receive 1 day after a talk - similar to `student-pre`. The file `template/student-post-`.txt.jinja` is used as template. Please note that `student-post: [0]` and `student-pre: [0]` will both send mails on the same day!
+All students will receive 1 day after a talk - similar to `student-pre`. The file `template/student-post-0.txt.jinja` is used as template. Please note that `student-post: [0]` and `student-pre: [0]` will both send mails on the same day!
 
 Example: "Dear Firstname Lastname, after yesterday's session please hand in ..."
 
