@@ -60,6 +60,8 @@ class SeminarNotifier:
         '''
         schedule = ''
         for talk in talks:
+            if talk[-1] is None:
+                continue
             if talk[-1] <= 0:
                 if (talk[1] != '') or (talk[2] != '') or (talk [3] != ''):
                     schedule += str(talk[0]) + ' ' + str(talk[1]) + ' ' + str(talk[2]) + '\n'
@@ -150,13 +152,14 @@ class SeminarNotifier:
                 if c > 1:
                     bcc +=', '
                 c -= 1
-            msg = MIMEText(mail[1])
-            msg['From'] = ''
-            msg['To'] = mail[0]
-            msg['BCC'] = bcc
-            msg['Subject'] = subject
-            p = Popen([binSendmail, '-t', '-oi'], stdin=PIPE)
-            p.communicate(msg.as_bytes())
+            #msg = MIMEText(mail[1])
+            #msg['From'] = ''
+            #msg['To'] = mail[0]
+            #msg['BCC'] = bcc
+            #msg['Subject'] = subject
+            #p = Popen([binSendmail, '-t', '-oi'], stdin=PIPE)
+            #p.communicate(msg.as_bytes())
+            print('---------------------------', mail[0], mail[1])
         return
 
 
@@ -347,14 +350,17 @@ class SeminarNotifier:
         # Append how many days are left until talk to talk list
         dateToday = datetime.today()
         for talk in talks:
-            try:
-                dateTalk = datetime.strptime(talk[0], '%d.%m.%Y')
-            except:
-                error.append('Date for talk ' + str(row[1]) + ' ' + str(row[2]) + ' is ' + str(row[0]) + ' and should be in the format 20.01.2000 (%d.%m.%Y).')
- 
-            # dateDiff < 0 means days prior talk, > 0 means days after talk
-            dateDiff = (dateToday-dateTalk).days
-            talk.append(dateDiff)
+            if talk[0] == '':
+                talk.append(None)
+            else:
+                try:
+                    dateTalk = datetime.strptime(talk[0], '%d.%m.%Y')
+                except:
+                    error.append('Date for talk ' + str(row[1]) + ' ' + str(row[2]) + ' is ' + str(row[0]) + ' and should be in the format 20.01.2000 (%d.%m.%Y).')
+
+                # dateDiff < 0 means days prior talk, > 0 means days after talk
+                dateDiff = (dateToday-dateTalk).days
+                talk.append(dateDiff)
  
  
         # Check for errors
@@ -400,6 +406,8 @@ class SeminarNotifier:
         for days in configStudentPre:
             talkList = [[0 for x in range(0)] for x in range(0)]
             for talk in talks:
+                if talk[-1] is None:
+                    continue
                 if talk[-1] == days*(-1):
                     talkList.append(talk)
  
@@ -417,6 +425,8 @@ class SeminarNotifier:
         for days in configStudentPost:
             talkList = [[0 for x in range(0)] for x in range(0)]
             for talk in talks:
+                if talk[-1] is None:
+                    continue
                 if talk[-1] == days:
                     talkList.append(talk)
  
@@ -434,6 +444,8 @@ class SeminarNotifier:
         for days in configSupervisorPre:
             talkList = [[0 for x in range(0)] for x in range(0)]
             for talk in talks:
+                if talk[-1] is None:
+                    continue
                 if talk[-1] == days*(-1):
                     talkList.append(talk)
  
@@ -452,6 +464,8 @@ class SeminarNotifier:
         for days in configSupervisorPost:
             talkList = [[0 for x in range(0)] for x in range(0)]
             for talk in talks:
+                if talk[-1] is None:
+                    continue
                 if talk[-1] == days:
                     talkList.append(talk)
  
