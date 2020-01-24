@@ -70,7 +70,7 @@ Example: "Dear Firstname Lastname, tomorrow will be the next session of our Jour
 student-post: [1]
 ```
 
-All students will receive 1 day after a talk - similar to `student-pre`. The file `template/student-post-0.txt.jinja` is used as template. Please note that `student-post: [0]` and `student-pre: [0]` will both send mails on the same day!
+All students will receive 1 day after a talk - similar to `student-pre`. The file `template/student-post-1.txt.jinja` is used as template. Please note that `student-post: [0]` and `student-pre: [0]` will both send mails on the same day!
 
 Example: "Dear Firstname Lastname, after yesterday's session please hand in ..."
 
@@ -86,7 +86,7 @@ Example: "Dear Supervisor, please remember that tomorrow your student Firstname 
 supervisor-post: [1]
 ```
 
-The supervisor of a talk will receive a mail ` day after ther talk imilar to `student-post`. The files `template/supervisor-post-1.txt.jinja` must exist and be readable.
+The supervisor of a talk will receive a mail 1 day after ther talk, similar to `student-post`. The files `template/supervisor-post-1.txt.jinja` must exist and be readable.
 
 Example: "Dear Supervisor, please remember to upload the slides of your student's talk and hand in your grading sheet until ..."
 
@@ -124,8 +124,8 @@ Date	|	Firstname	|	Lastname	|	Mail	|	Title	|	Abstract	|	Supervisor	|	Supervisorm
 07.01.2020 | FirstnameA | LastnameA | a@example.com | Title A | Short Abstract A | Supervisor A | sa@example.com
 07.01.2020 | FirstnameB | LastnameB | b@example.com | Title B | Short Abstract B | Supervisor B | sb@example.com
 14.01.2020 | FirstnameC | LastnameC | c@example.com | Title C | Short Abstract C | Supervisor C | sc@example.com
-           | FirstnameD | LastnameD | d@example.com |  |  |  | 
-21.01.2020 |  |  |  |  |  |  | 
+           | FirstnameD | LastnameD | d@example.com |         |                  |              | 
+21.01.2020 |            |           |               |         |                  |              | 
 
 The above above example holds five entries for three sessions
 
