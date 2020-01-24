@@ -111,6 +111,11 @@ class SeminarNotifier:
             Returns:
                 List([str, str]). Returns an array of [mail address, mail text] to send.
         '''
+        # Check for supervisor mail
+        if talk[7] == '':
+            return []
+
+        # Compose mail
         schedule = self.computeSchedule (talks)
         mailtext = Template(template)
         mailtext = mailtext.render(student_firstname=talk[1], student_lastname=talk[2], seminar_name=seminarname, schedule=schedule, talk=talk, supervisor_name=talk[6])
@@ -152,14 +157,16 @@ class SeminarNotifier:
                 if c > 1:
                     bcc +=', '
                 c -= 1
-            #msg = MIMEText(mail[1])
-            #msg['From'] = ''
-            #msg['To'] = mail[0]
-            #msg['BCC'] = bcc
-            #msg['Subject'] = subject
-            #p = Popen([binSendmail, '-t', '-oi'], stdin=PIPE)
-            #p.communicate(msg.as_bytes())
-            print('---------------------------', mail[0], mail[1])
+            msg = MIMEText(mail[1])
+            msg['From'] = ''
+            msg['To'] = mail[0]
+            msg['BCC'] = bcc
+            msg['Subject'] = subject
+            p = Popen([binSendmail, '-t', '-oi'], stdin=PIPE)
+            p.communicate(msg.as_bytes())
+
+            # Use this for debugging
+            #print('---------------------------\n', mail[0], mail[1])
         return
 
 
