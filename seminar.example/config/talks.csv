@@ -1,5 +1,6 @@
-Date,Firstname,Lastname,Mail,Title,Abstract,Supervisor,Supervisormail,,,
-06.11.2018,NameA,AA,a@example.com,Title,A,Yes!,Abstract,Supervisor,A,sa@example.com
-13.11.2018,NameB,BB,b@example.com,Title,B,Yes!,Abstract,Supervisor,B,sb@example.com
-20.11.2018,NameC,CC,c@example.com,Title,C,Yes!,Abstract,Supervisor,C,sc@example.com
-27.11.2018,NameD,DD,d@example.com,Title,D,Yes!,Abstract,Supservisor,D,sd@example.com
+Date,Firstname,Lastname,Mail,Title,Abstract,Supervisor,Supervisormail
+07.01.2020,FirstnameA,LastnameA,a@example.com,Title A,Short Abstract A,Supervisor A,sa@example.com
+07.01.2020,FirstnameB,LastnameB,b@example.com,Title B,Short Abstract B,Supervisor B,sb@example.com
+14.01.2020,FirstnameC,LastnameC,c@example.com,Title C,Short Abstract C,Supervisor C,sc@example.com
+,FirstnameD,LastnameD,d@example.com,,,,
+21.01.2020,,,,,,,
