@@ -119,13 +119,13 @@ All error reports are sent to this addresses. Multiple addresses are comma separ
 
 All talks are configured using the file `config/talks.csv`. It is a comma-separtated-file where the first line contains the header (which is not parsed):
 
-Date	|	Firstname	|	Lastname	|	Mail	|	Title	|	Abstract	|	Supervisor	|	Supervisormail
----	|	---	|	---	|	---	|	---	|	---	|	---	|	---
-07.01.2020 | FirstnameA | LastnameA | a@example.com | Title A | Short Abstract A | Supervisor A | sa@example.com
-07.01.2020 | FirstnameB | LastnameB | b@example.com | Title B | Short Abstract B | Supervisor B | sb@example.com
-14.01.2020 | FirstnameC | LastnameC | c@example.com | Title C | Short Abstract C | Supervisor C | sc@example.com
-           | FirstnameD | LastnameD | d@example.com |         |                  |              | 
-21.01.2020 |            |           |               |         |                  |              | 
+|Date	|	Firstname	|	Lastname	|	Mail	|	Title	|	Abstract	|	Supervisor	|	Supervisormail |
+|---	|	---	|	---	|	---	|	---	|	---	|	---	|	--- |
+|07.01.2020 | FirstnameA | LastnameA | a@example.com | Title A | Short Abstract A | Supervisor A | sa@example.com |
+|07.01.2020 | FirstnameB | LastnameB | b@example.com | Title B | Short Abstract B | Supervisor B | sb@example.com |
+|14.01.2020 | FirstnameC | LastnameC | c@example.com | Title C | Short Abstract C | Supervisor C | sc@example.com |
+|           | FirstnameD | LastnameD | d@example.com |         |                  |              |                |
+|21.01.2020 |            |           |               |         |                  |              |                |
 
 The above above example holds five entries for three sessions
 
