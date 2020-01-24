@@ -3,7 +3,7 @@
 
 # This is a list of paths to all seminars, which should be handled by this python script
 # Configurations for each seminar can be found within this folder.
-seminars: ["/home/sreich/git/seminar-notifier/seminar-notifier/seminar.example"]
+seminars: ["/home/sreich/git/seminar-notifier/seminar.example"]
 
 
 # Sendmail binary
