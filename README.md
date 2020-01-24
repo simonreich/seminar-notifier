@@ -127,7 +127,7 @@ All talks are configured using the file `config/talks.csv`. It is a comma-separt
 |           | FirstnameD | LastnameD | d@example.com |         |                  |              |                |
 |21.01.2020 |            |           |               |         |                  |              |                |
 
-The above above example holds five entries for three sessions
+The above above example holds five entries for three sessions:
 
 1.  The first session takes place on 07.01.2020 with two talks from A and B. Mails will be send to A, B, C, D, Supvervisor A, and Supvervisor B.
 2.  The second session takes place on 14.01.2020 with one talk from C. Mails will be send to A, B, C, D, and Supvervisor C.
@@ -140,23 +140,19 @@ Entry D does not have a talk attached. D will not appear in the schedule, howeve
 
 All mails are personalized. This means they are addressed to one specific person. The following jinja2 short codes can be used in all templates, except the admin template:
 
-`{{ student_firstname|escape }}` is replaced with the recipient's first name.
-
-`{{ student_lastname|escape }}` is replaced with the recipient's last name.
-
-`{{ supervisor_name|escape }}` is replaced with the recipient's supervisor name.
-
-`{{ talk[]|escape }}` lists the recipient's talk as python list in the format from `config/talks.csv` (date, first name, last name, mail, ...): i.e. `{{ talk[0]|escape }}` will be replaced with the date of the student's talk.
-
-`{{ seminar_name|escape }}` will be replaced with the seminar name.
-
-`{{ schedule|escape }}` will be replaced with the schedule of all upcoming talks.
-
-`{{ talk_list[[]]|escape }}` holds a python list of all talks identified as important for that template. If this is used in the template `pre-1`, than important refers to all talks, which will take place tomorrow. One talk is a python list in the same format as `config/talks.csv` (date, first name, last name, mail, ...): i.e. `{{ talk[0]|escape }}` will be replaced with the date of the talk. 
-
+|Short code	|	Replacement	|
+| ---	|	---	|
+| `{{ student_firstname|escape }}` | is replaced with the recipient's first name. |
+| `{{ student_lastname|escape }}`  | is replaced with the recipient's last name. |
+| `{{ supervisor_name|escape }}`   | is replaced with the recipient's supervisor name. |
+| `{{ talk[]|escape }}`            | lists the recipient's talk as python list in the format from `config/talks.csv` (date, first name, last name, mail, ...): i.e. `{{ talk[0]|escape }}` will be replaced with the date of the student's talk. |
+| `{{ seminar_name|escape }}`      | is replaced with the seminar name. |
+| `{{ schedule|escape }}`          | is replaced with the schedule of all upcoming talks. |
+| `{{ talk_list[[]]|escape }}`     | holds a python list of all talks identified as important for that template. If this is used in the template `pre-1`, than important refers to all talks, which will take place tomorrow. One talk is a python list in the same format as `config/talks.csv` (date, first name, last name, mail, ...): i.e. `{{ talk[0]|escape }}` will be replaced with the date of the talk. |
 
 The following jinja2 short codes can be used in the admin template:
 
-`{{ seminar_name|escape }}` will be replaced with the seminar name.
-
-`{{ problem_list[]|escape }}` lists all errors as python list.
+|Short code	|	Replacement	|
+| ---	|	---	|
+| `{{ seminar_name|escape }}` | will be replaced with the seminar name. |
+| `{{ problem_list[]|escape }}` | lists all errors as python list. |
